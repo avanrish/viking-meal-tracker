@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <h1>Viking Meal Tracker</h1>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="history">History</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </div>
+
+  <div id="history" class="tab-content active">
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search meals...">
+    </div>
+    <div class="filters">
+      <select id="filter-rating">
+        <option value="">All ratings</option>
+        <option value="5">★★★★★</option>
+        <option value="4">★★★★+</option>
+        <option value="3">★★★+</option>
+        <option value="2">★★+</option>
+        <option value="1">★+</option>
+        <option value="0">Unrated</option>
+      </select>
+      <select id="filter-category">
+        <option value="">All categories</option>
+        <option value="śniadanie">Śniadanie</option>
+        <option value="obiad">Obiad</option>
+        <option value="podwieczorek">Podwieczorek</option>
+        <option value="kolacja">Kolacja</option>
+      </select>
+      <select id="sort-by">
+        <option value="name">A-Z</option>
+        <option value="rating-desc">Rating ↓</option>
+        <option value="rating-asc">Rating ↑</option>
+        <option value="date">Newest</option>
+      </select>
+    </div>
+    <div id="meal-list" class="meal-list"></div>
+    <div id="empty-state" class="empty-state" style="display: none;">
+      No meals tracked yet. Visit the Kuchnia Vikinga dashboard to start rating!
+    </div>
+  </div>
+
+  <div id="settings" class="tab-content">
+    <div class="settings-section">
+      <h3>Export Data</h3>
+      <p>Download all your meal ratings and notes as CSV.</p>
+      <button id="btn-export" class="btn">Export CSV</button>
+    </div>
+    <div class="settings-section">
+      <h3>Import Data</h3>
+      <p>Import meals from a CSV file (e.g. from Google Sheets).</p>
+      <input type="file" id="file-import" accept=".csv" style="display: none">
+      <button id="btn-import" class="btn">Import CSV</button>
+      <span id="import-status" class="status"></span>
+    </div>
+    <div class="settings-section danger">
+      <h3>Clear All Data</h3>
+      <p>Remove all saved meal data. This cannot be undone.</p>
+      <button id="btn-clear" class="btn btn-danger">Clear All Data</button>
+    </div>
+    <div class="settings-section">
+      <p class="version">Viking Meal Tracker v1.0.0</p>
+    </div>
+  </div>
+
+  <script src="../lib/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
