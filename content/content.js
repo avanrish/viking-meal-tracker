@@ -8,7 +8,9 @@
 
   // --- DOM: find and process meal cards ---
 
-  function processPage() {
+  async function processPage() {
+    const allMeals = await MealStorage.getAll();
+
     // Main dashboard meal list
     document.querySelectorAll('.dashboard-meals-list > li').forEach(li => {
       if (li.dataset.vmtProcessed) return;
@@ -20,7 +22,7 @@
       const mealName = contentEl.textContent.trim();
       if (!mealName) return;
 
-      injectControls(li, mealName, category, contentEl);
+      injectControls(li, mealName, category, contentEl, allMeals);
     });
 
     // Swap/exchange meal cards (.exchange-meals-list .single-meal)
@@ -30,18 +32,17 @@
       if (!descEl) return;
       const mealName = descEl.textContent.trim();
       if (!mealName) return;
-      injectControlsExchange(card, mealName, descEl);
+      injectControlsExchange(card, mealName, descEl, allMeals);
     });
   }
 
   // --- Inject our UI into a meal card ---
 
-  async function injectControls(card, mealName, category, contentEl) {
+  function injectControls(card, mealName, category, contentEl, allMeals) {
     const mealId = slugify(mealName);
     card.dataset.vmtProcessed = 'true';
 
-    // Only read — don't save until user actually rates or adds a note
-    const meal = await MealStorage.get(mealId);
+    const meal = allMeals[mealId] || null;
 
     const controls = document.createElement('div');
     controls.className = 'vmt-controls';
@@ -56,15 +57,22 @@
     }
 
     updateCardBadge(card, meal?.rating);
+
+    if (!meal?.rating) {
+      const similar = MealStorage.findSimilar(mealName, allMeals);
+      if (similar.length) {
+        (mealContent || card).appendChild(createSimilarIndicator(similar));
+      }
+    }
   }
 
   // --- Inject controls into exchange/swap meal cards ---
 
-  async function injectControlsExchange(card, mealName, descEl) {
+  function injectControlsExchange(card, mealName, descEl, allMeals) {
     const mealId = slugify(mealName);
     card.dataset.vmtProcessed = 'true';
 
-    const meal = await MealStorage.get(mealId);
+    const meal = allMeals[mealId] || null;
 
     const controls = document.createElement('div');
     controls.className = 'vmt-controls';
@@ -75,6 +83,13 @@
     section.parentNode.insertBefore(controls, section.nextSibling);
 
     updateCardBadge(card, meal?.rating);
+
+    if (!meal?.rating) {
+      const similar = MealStorage.findSimilar(mealName, allMeals);
+      if (similar.length) {
+        controls.parentNode.insertBefore(createSimilarIndicator(similar), controls.nextSibling);
+      }
+    }
   }
 
   // --- Star rating ---
@@ -199,6 +214,51 @@
     }
     document.removeEventListener('click', handleOutsideClick);
     document.removeEventListener('keydown', handleEscKey);
+  }
+
+  // --- Similar meal indicator ---
+
+  function createSimilarIndicator(matches) {
+    const VISIBLE = 2;
+    const container = document.createElement('div');
+    container.className = 'vmt-similar';
+
+    const label = document.createElement('div');
+    label.className = 'vmt-similar-label';
+    label.textContent = 'Similar:';
+    container.appendChild(label);
+
+    matches.forEach((match, i) => {
+      const row = document.createElement('div');
+      row.className = 'vmt-similar-row';
+      if (i >= VISIBLE) row.classList.add('vmt-similar-hidden');
+
+      const name = document.createElement('span');
+      name.className = 'vmt-similar-name';
+      name.textContent = match.name;
+
+      const rating = document.createElement('span');
+      rating.className = 'vmt-similar-rating';
+      rating.textContent = '\u2605'.repeat(match.rating) + '\u2606'.repeat(5 - match.rating);
+
+      row.append(name, ' ', rating);
+      container.appendChild(row);
+    });
+
+    if (matches.length > VISIBLE) {
+      const toggle = document.createElement('button');
+      toggle.className = 'vmt-similar-toggle';
+      toggle.textContent = `+${matches.length - VISIBLE} more`;
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const expanded = container.classList.toggle('vmt-similar-expanded');
+        toggle.textContent = expanded ? 'show less' : `+${matches.length - VISIBLE} more`;
+      });
+      container.appendChild(toggle);
+    }
+
+    return container;
   }
 
   // --- Card badge (left border color) ---
