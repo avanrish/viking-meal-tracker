@@ -14,9 +14,10 @@ Chrome extension for rating and taking notes on meals from [Kuchnia Vikinga](htt
 ## Install
 
 1. Clone or download this repo
-2. Open `chrome://extensions/`
-3. Enable **Developer mode** (top right)
-4. Click **Load unpacked** and select the `viking-meal-tracker` folder
+2. Run `pnpm install` and `pnpm build`
+3. Open `chrome://extensions/`
+4. Enable **Developer mode** (top right)
+5. Click **Load unpacked** and select the `dist` folder
 
 ## CSV Import
 
@@ -29,6 +30,15 @@ The importer expects this format:
 
 A `data.csv` file is included as a starting point. Import it via the extension popup under **Settings > Import CSV**.
 
+## Development
+
+```
+pnpm install              # Install dependencies
+pnpm build            # Build to dist/
+```
+
+After making changes, run `pnpm build` and reload the extension in Chrome.
+
 ## Project Structure
 
 ```
@@ -39,8 +49,9 @@ content/
 popup/
   popup.html/js/css      # Extension popup — history, search, filters, settings
 lib/
-  storage.js             # CRUD on chrome.storage.local, CSV import/export
+  storage.js             # CRUD on chrome.storage.local, CSV import/export, similarity matching
 assets/icons/            # Extension icons (16, 48, 128px)
+vite.config.js           # Vite build config — bundles JS as IIFE, copies static files to dist/
 ```
 
 ## Data Storage
