@@ -1,0 +1,26 @@
+{
+  "name": "viking-meal-tracker",
+  "version": "1.0.0",
+  "description": "Chrome extension for rating and taking notes on meals from [Kuchnia Vikinga](https://kuchniavikinga.pl) directly on their dashboard.",
+  "type": "module",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "build": "vite build --mode content && vite build --mode popup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avanrish/viking-meal-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/avanrish/viking-meal-tracker/issues"
+  },
+  "homepage": "https://github.com/avanrish/viking-meal-tracker#readme",
+  "devDependencies": {
+    "vite": "^8.0.8"
+  }
+}
